@@ -1,0 +1,71 @@
+﻿@model Anilist.Models.HomeIndexViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Szeroki lewy panel z aktualnościami -->
+        <div class="col-md-8">
+            <h1 class="display-4">Aktualności</h1>
+            <!-- Przycisk wyświetlający formularz dodawania nowych aktualności -->
+            <button type="button" class="btn btn-primary mb-3" id="toggleNewsForm">Dodaj post</button>
+            <!-- Formularz dodawania nowych aktualności (domyślnie ukryty) -->
+            <form method="post" action="@Url.Action("AddNews", "Home")" id="addNewsForm" style="display: none;">
+                <div class="form-group">
+                    <label for="newsTitle">Tytuł</label>
+                    <input type="text" class="form-control" id="newsTitle" name="newsTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="newsContent">Treść</label>
+                    <textarea class="form-control" id="newsContent" name="newsContent" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Dodaj aktualność</button>
+            </form>
+            <!-- Wyświetlanie aktualności -->
+            @foreach (var news in Model.NewsList)
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">@news.Title</h5>
+                        <p class="card-text">@news.Content</p>
+                        <p class="card-text"><small class="text-muted">@news.DatePosted.ToString("MMMM dd, yyyy")</small></p>
+                        <!-- Przycisk usuwania posta -->
+                        <form method="post" action="@Url.Action("DeleteNews", "Home")">
+                            <input type="hidden" name="newsId" value="@news.Id" />
+                            <button type="submit" class="btn btn-danger">Usuń</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+        <!-- Prawy węższy panel z najnowszymi anime -->
+        <div class="col-md-4">
+            <h1 class="display-4">Najnowsze anime</h1>
+            <div class="list-group">
+                @foreach (var anime in Model.NewestAnime)
+                {
+                    <div class="list-group-item">
+                        <img src="@anime.ImageUrl" alt="@anime.Title" class="img-thumbnail" style="max-width: 100px; max-height: 150px;" />
+                        <h4 class="list-group-item-heading">@anime.Title</h4>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Funkcja wywoływana po naciśnięciu przycisku "Dodaj post" lub "Schowaj pole"
+            $("#toggleNewsForm").click(function () {
+                $("#addNewsForm").slideToggle(); // Pokaż lub schowaj formularz dodawania nowych aktualności
+                // Zmień tekst na przycisku w zależności od stanu pola
+                var buttonText = $("#addNewsForm").is(":visible") ? "Schowaj pole" : "Dodaj post";
+                $(this).text(buttonText);
+            });
+        });
+    </script>
+}
